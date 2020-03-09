@@ -1,13 +1,17 @@
+/*
+ * Do not allow TCP port 8080 to connect by dropping corr pkts.
+ */
+
 #include <linux/bpf.h>
 #include <linux/in.h>
 #include <linux/if_ether.h>
 #include <linux/ip.h>
-#include <linux/udp.h>
+#include <linux/tcp.h>
 
 #define htons(x) ((__be16)___constant_swab16((x)))
 
-// Sizeof all headers till UDP
-#define TOTSZ (sizeof(struct ethhdr) + sizeof(struct iphdr) + sizeof(struct udphdr))
+// Sizeof all headers till TCP
+#define TOTSZ (sizeof(struct ethhdr) + sizeof(struct iphdr) + sizeof(struct tcphdr))
 
 int xdp_drop(struct xdp_md *ctx)
 {
@@ -15,13 +19,13 @@ int xdp_drop(struct xdp_md *ctx)
     void *data_end = (void *)(long)ctx->data_end;
 
     struct iphdr *ip = data + sizeof(struct ethhdr);
-    struct udphdr *udph = data + sizeof(struct ethhdr) + sizeof(struct iphdr);
+    struct tcphdr *tcph = data + sizeof(struct ethhdr) + sizeof(struct iphdr);
 
     if (data + TOTSZ > data_end) {
         return XDP_PASS;
     }
 
-    if (ip->protocol == IPPROTO_UDP && udph->dest == htons(1234)) {
+    if (ip->protocol == IPPROTO_TCP && tcph->source == htons(8080)) {
         return XDP_DROP;
     }
 
