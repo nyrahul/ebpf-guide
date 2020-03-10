@@ -81,7 +81,7 @@ The ``xdp obj xdp_drop.o sec .text`` instructs the ``ip`` command to load the ``
 
 Q. How does iproute2 internally load the bytecode?
 **************************************************
-Ans: iproute2 internally links with ``libelf.so`` to load the specified ELF section (``.text`` in our case) and instructs the kernel to load the bytecode using `bpf()`_ *bpf(int cmd \/\*BPF_PROG_LOAD\*\/, union bpf_attr \*attr, unsigned int size)* call. The ``bpf_attr->prog_type`` specifies ``BPF_PROG_TYPE_XDP`` specifies the XDP hookpoint.
+Ans: iproute2 internally links with ``libelf.so`` to load the specified ELF section (``.text`` in our case) and instructs the kernel to load the bytecode using `bpf()`_ *bpf(int cmd \/\*BPF_PROG_LOAD\*\/, union bpf_attr \*attr, unsigned int size)* call. The ``bpf_attr->prog_type`` specifies ``BPF_PROG_TYPE_XDP`` as the XDP hookpoint.
 
 .. image:: res/bpf-prog-load.png
 
