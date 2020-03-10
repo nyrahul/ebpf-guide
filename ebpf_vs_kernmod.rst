@@ -21,11 +21,17 @@ Preemption
 
 Kernel module follows regular kernel code preemption logic.
 
-Function reusability
-********************
-*eBPF does not allow splitting up of execution logic into non-inlined functions*.
+Global/Shared Data
+******************
+*eBPF cannot access global data unlike kernel modules*.
 
-Kernel modules are flexible to split up the code into functions. Thus if there are multiple eBPF programs which have subset of execution code in common then reusing the subset is much more challenging as compared to kernel modules. 
+Since the eBPF instruction set execution is non-preemptible you can store the shared data in PRECPU_MAP.
+
+Reusing existing lib
+********************
+*eBPF does not allow linking up of execution logic into functions outside of eBPF programs, for e.g., shared libs*.
+
+Kernel modules are flexible to split up the code into functions and they can use external helper libs. Reusing eBPF functions in different bytecodes is possible through tail calls and is much more challenging as compared to kernel modules. 
 
 Satisfying Tracing use-case
 ***************************
