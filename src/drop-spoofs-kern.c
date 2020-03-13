@@ -76,7 +76,7 @@ int tc_egress(struct __sk_buff *skb)
 
     idx = skb->ifindex;
     val = map_lookup_elem(&iface_map, &idx);
-    if (val && *val && ip->saddr != *val) {
+    if (val && *val && (ip->saddr & 0x00ffffff) != (*val & 0x00ffffff)) {
         act = ACT_DROP;
     }
 
