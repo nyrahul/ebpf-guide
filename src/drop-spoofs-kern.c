@@ -63,7 +63,7 @@ static __inline void update_stat(uint32_t act)
 SEC("egress")
 int tc_egress(struct __sk_buff *skb)
 {
-    uint32_t act = ACT_DROP;
+    uint32_t act = ACT_ALLOW;
     uint32_t idx;
     uint32_t *val;
     void *data = (void *)(long)skb->data;
@@ -76,8 +76,8 @@ int tc_egress(struct __sk_buff *skb)
 
     idx = skb->ifindex;
     val = map_lookup_elem(&iface_map, &idx);
-    if (val && ip->saddr == *val) {
-        act = ACT_ALLOW;
+    if (val && *val && ip->saddr != *val) {
+        act = ACT_DROP;
     }
 
     update_stat(act);
