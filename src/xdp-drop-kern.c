@@ -1,5 +1,7 @@
 /*
  * Do not allow TCP port 8080 to connect by dropping corr pkts.
+ *
+ * Check: block-tcp-8080.rst for details
  */
 
 #include <linux/bpf.h>
