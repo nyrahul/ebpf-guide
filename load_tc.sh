@@ -2,6 +2,7 @@
 
 IFACE=lo
 [[ $UID -ne 0 ]] && echo "Need to be root" && exit 2
+[[ ! -f "bin/drop-spoofs-kern.bo" ]] && echo "do a make first" && exit 2
 
 function unload()
 {

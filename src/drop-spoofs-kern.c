@@ -2,12 +2,11 @@
  * Do not allow a container to generate spoofed packet
  */
 
-#include <stdint.h>
-#include <linux/bpf.h>
-#include <linux/ip.h>
-#include <linux/in.h>
-#include <linux/pkt_cls.h>
-#include <linux/if_ether.h>
+#include <uapi/linux/bpf.h>
+#include <uapi/linux/ip.h>
+#include <uapi/linux/in.h>
+#include <uapi/linux/pkt_cls.h>
+#include <uapi/linux/if_ether.h>
 #include "drop-spoofs.h"
 
 #ifndef SEC
