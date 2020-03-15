@@ -19,7 +19,7 @@ FAQs
 
 Problem Statements:
 ~~~~~~~~~~~~~~~~~~~
-1. `Block TCP port 8080 <block-tcp-8080.rst>`_
-2. `Ack-Thinning <ack-thinning.rst>`_
-3. `Using Container Context to avoid contain malicious containers <drop-spoofed-packets.rst>`_
-4. `Localhost Fast transfer <intrahost-sockmap.rst>`_
+1. `Block TCP port 8080 <docs/block-tcp-8080.rst>`_
+2. `Ack-Thinning <docs/ack-thinning.rst>`_
+3. `Using Container Context to avoid contain malicious containers <docs/drop-spoofed-packets.rst>`_
+4. `Localhost Fast transfer <docs/intrahost-sockmap.rst>`_
