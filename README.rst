@@ -14,7 +14,7 @@ This tutorial will help you to build a sample ebpf programs and get familiarized
 FAQs
 ~~~~
 
-* `eBPF vs kernel module <ebpf_vs_kernmod.rst>`_
+* `eBPF vs kernel module <docs/ebpf_vs_kernmod.rst>`_
 
 
 Problem Statements:
