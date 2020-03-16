@@ -11,7 +11,7 @@ ifeq ($(V),1)
   Q =
 endif
 
-# This is shamelessly copied from kernel's samples/bpf/Makefile
+# shamelessly copied from kernel's samples/bpf/Makefile
 KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -I$(KRNDIR)/arch/x86/include -I$(KRNDIR)/arch/x86/include/generated  \
 	 -I$(KRNDIR)/include -I$(KRNDIR)/arch/x86/include/uapi \
@@ -19,7 +19,7 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -I$(KRNDIR)/include/generated/uapi \
 	 -include $(KRNDIR)/include/linux/kconfig.h \
 	 -include asm_goto_workaround.h \
-	 -I$(KRNDIR)/samples/bpf -I$(KRNDIR)/tools/testing/selftests/bpf/ -Isrc \
+	 -I$(KRNDIR)/samples/bpf -I$(KRNDIR)/tools/testing/selftests/bpf -Isrc \
 	 -D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
 	 -D__TARGET_ARCH_x86 -Wno-compare-distinct-pointer-types \
 	 -Wno-gnu-variable-sized-type-not-at-end \
@@ -27,7 +27,7 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -Wno-unknown-warning-option  \
 	 -O2 -emit-llvm
 
-UF  = -Isrc -O2 -I $(KRNDIR)/tools/lib -Wall
+UF  = -Isrc -O2 -I $(KRNDIR)/tools/lib -Wall -I$(KRNDIR)/tools/testing/selftests/bpf
 UDF = $(KRNDIR)/tools/lib/bpf/libbpf.a -lelf
 
 SRCDIR=src
@@ -39,6 +39,8 @@ BOBJS:=$(patsubst %.c,$(BIN)/%.bo,$(SRCN))
 SRCS_USER:=$(wildcard $(SRCDIR)/*-user.c)
 SRCN:=$(notdir $(SRCS_USER))
 UBINS:=$(patsubst %.c,$(BIN)/%.bin,$(SRCN))
+
+UTIL_SRC=$(KRNDIR)/tools/testing/selftests/bpf/cgroup_helpers.c
 
 vpath %.c $(SRCDIR)
 
@@ -60,7 +62,7 @@ endif
 
 $(BIN)/%.bin: %.c
 	@echo "Compiling user-space app: $(CYAN)$@$(NC) ..."
-	$(Q)$(CC) $(UF) $< -o $@ $(UDF)
+	$(Q)$(CC) $(UF) $(UTIL_SRC) $< -o $@ $(UDF)
 
 $(BIN)/%.bo: %.c
 	@echo "Compiling eBPF bytecode: $(GREEN)$@$(NC) ..."
@@ -69,3 +71,4 @@ $(BIN)/%.bo: %.c
 .PHONY: clean
 clean:
 	@rm -rf $(BIN)
+

@@ -7,6 +7,7 @@
 #include <uapi/linux/in.h>
 #include <uapi/linux/pkt_cls.h>
 #include <uapi/linux/if_ether.h>
+#include "bpf_helpers.h"
 #include "drop-spoofs.h"
 
 #ifndef SEC
@@ -16,12 +17,6 @@
 #ifndef lock_xadd
 #define lock_xadd(ptr, val) ((void)__sync_fetch_and_add(ptr, val))
 #endif
-
-#ifndef BPF_FUNC
-#define BPF_FUNC(NAME, ...) (*NAME)(__VA_ARGS__) = (void *)BPF_FUNC_##NAME
-#endif
-
-static void *BPF_FUNC(map_lookup_elem, void *map, const void *key);
 
 #define PIN_GLOBAL_NS           2
 
@@ -55,7 +50,7 @@ static __inline void update_stat(uint32_t act)
 {
     uint32_t *val;
 
-    val = map_lookup_elem(&stat_map, &act);
+    val = bpf_map_lookup_elem(&stat_map, &act);
     if (val) lock_xadd(val, 1);
 }
 
@@ -74,7 +69,7 @@ int tc_egress(struct __sk_buff *skb)
     }
 
     idx = skb->ifindex;
-    val = map_lookup_elem(&iface_map, &idx);
+    val = bpf_map_lookup_elem(&iface_map, &idx);
     if (val && *val && (ip->saddr & 0x00ffffff) != (*val & 0x00ffffff)) {
         act = ACT_DROP;
     }

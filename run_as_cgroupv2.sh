@@ -1,12 +1,22 @@
 #!/bin/bash
-[[ $UID -ne 0 ]]             && echo "need to be root"   && exit 2
-[[ $(which curl) == "" ]]    && echo "need util curl"    && exit 2
-[[ $(which timeout) == "" ]] && echo "need util timeout" && exit 2
+
+chktool()
+{
+    [[ $(which "$1") == "" ]] && echo "need util $1" && exit 2
+}
+
+[[ $UID -ne 0 ]] && echo "need to be root" && exit 2
+
+chktool curl
+chktool python
+chktool timeout
+chktool bpftool
+chktool mountpoint
 
 CGRP_MNT=/tmp/cgroupv2
 FOO=$CGRP_MNT/foo
-PINPT=/sys/fs/bpf/mytestprog
-BO=bin/local-socket-bypass-kern.bo
+PINPT=/sys/fs/bpf/localbypass
+BO=bin/local-socket-bypass-sockops-kern.bo
 BPF_MNT=/sys/fs/bpf
 
 trap 'unload "$BASH_COMMAND"' EXIT
@@ -37,14 +47,22 @@ load()
     echo $$ >> $FOO/cgroup.procs
     bpftool prog load $BO $PINPT
     bpftool cgroup attach $FOO sock_ops pinned $PINPT
+    sleep 1
+    ./bin/local-socket-bypass-user.bin &
+    bypass_pid=$!
 }
 
 load
 
 ### Start of Action
 
-curl http://www.baidu.com
+python -m SimpleHTTPServer 12345 &
+srv_pid=$!
+sleep 1
+curl http://localhost:12345/
+#curl http://www.baidu.com
+kill $srv_pid $bypass_pid
 
 ### End of Action
 
-timeout --preserve-status 1s bpftool prog tracelog
+timeout --preserve-status 1s bpftool prog tracelog #show whatever logs were captured

@@ -22,4 +22,4 @@ Problem Statements:
 1. `Block TCP port 8080 <docs/block-tcp-8080.rst>`_
 2. `Ack-Thinning <docs/ack-thinning.rst>`_
 3. `Using Container Context to avoid contain malicious containers <docs/drop-spoofed-packets.rst>`_
-4. `Localhost Fast transfer <docs/intrahost-sockmap.rst>`_
+4. `Localhost Bypass Transfer <docs/localhost-bypass-stack.rst>`_
