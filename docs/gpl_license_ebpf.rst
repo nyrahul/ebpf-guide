@@ -5,9 +5,9 @@ eBPF kernel code is tightly coupled with the regular linux kernel code i.e., it
 operates with the same priviledges and address space as the kernel. This means
 eBPF kernel code needs to adhere to the licensing restrictions of the kernel
 components whichever are applicable. For ebpf these kernel components are
-helper_ functions.
+`helper`_ functions.
 
-eBPF helper_ functions allows one to invoke kernel functions. These helper
+eBPF `helper`_ functions allows one to invoke kernel functions. These helper
 functions can either be GPLed or not and they have to explicitly define
 their license. For e.g.,::
     static const struct bpf_func_proto bpf_probe_read_proto = {
