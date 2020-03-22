@@ -8,9 +8,13 @@
  */
 
 #include <uapi/linux/bpf.h>
+#include <linux/in.h>
 #include <linux/version.h>
 
 #include "bpf_helpers.h"
+
+#define SRV_IDX  0
+#define CLI_IDX  1
 
 struct bpf_map_def SEC("maps") skmap = {
     .type        = BPF_MAP_TYPE_SOCKMAP,
@@ -19,35 +23,47 @@ struct bpf_map_def SEC("maps") skmap = {
     .max_entries = 2,
 };
 
-#if 1
 SEC("sk_skb1")
 int prog1(struct __sk_buff *skb)
 {
-    bpf_printk("parser called\n");
+    bpf_printk("lport=%d parser called %d\n", skb->local_port, skb->len);
 	return skb->len;
 }
 
 SEC("sk_skb2")
 int prog2(struct __sk_buff *skb)
 {
-	uint32_t idx = 0;
-    bpf_printk("verdict called\n");
-	return bpf_sk_redirect_map(skb, &skmap, idx, 0);
+    int verdict;
+    __u32 lport = skb->local_port;
+	uint32_t idx = CLI_IDX;
+
+    if (lport == 12345) {
+        idx = SRV_IDX;
+    }
+	verdict = bpf_sk_redirect_map(skb, &skmap, idx, BPF_F_INGRESS);
+    bpf_printk("lport=%d verdict %d\n", lport, skb->len);
+    return verdict;
 }
-#endif
 
 SEC("sockops")
 int sock_map_update(struct bpf_sock_ops *ops)
 {
-    int op;
-    op = (int) ops->op;
+    __u32 lport = ops->local_port;
+    __u32 rport = ops->remote_port;
+    __u32 lip = ops->local_ip4;
+    int op = (int) ops->op;
+
+    if (lip != 0x100007f) {
+        return 0;
+    }
 
     if (op == BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB || op == BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB) {
-        uint32_t idx = 0;
-        int ret;
-        bpf_printk("Calling UPDATE: loc=0x%x:%d rem=0x%x\n",
-                ops->local_ip4, ops->local_port, ops->remote_ip4);
-        ret = bpf_sock_map_update(ops, &skmap, &idx, BPF_ANY);
+        int idx = CLI_IDX, ret;
+        if (lport == 12345) {
+            idx = SRV_IDX;
+        }
+        bpf_printk("%d UPDATE: lport=%d\n", idx, lport);
+        ret = bpf_sock_map_update(ops, &skmap, &idx, BPF_NOEXIST);
         if (ret) {
             bpf_printk("FAILED bpf_sock_map_update ret=%d\n", ret);
         }

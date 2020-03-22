@@ -6,10 +6,10 @@ What is it?
 A TCP socket will go through all the phases of TCP/IP packet processing even
 when the remote peer is a local TCP socket. The aim of this ebpf code is to
 bypass this network stack processing for TCP client/server communication on
-local sockets.  The sockmap_ primitive added to ebpf allows you to
-parse/redirect the traffic between the sockets.
+local sockets.  The sockmap_ primitive added to ebpf allows to parse/redirect
+the traffic between the sockets.
 
-But why would anyone use TCP sockets locally?
+Why would anyone use TCP sockets locally?
 ---------------------------------------------
 * Apps use TCP sockets for inter-process comm since their processes may be
   local or remote. By using TCP, their code works whether the other process is
@@ -24,7 +24,7 @@ But why would anyone use TCP sockets locally?
   primary/main container. This requires that in some cases (the TLS case
   mentioned) the traffic is proxied through the sidecar.
 
-But why to bypass network stack?
+Why to bypass network stack?
 --------------------------------
 * Mainly for performance reason. In a typical container env, a packet
   may be tossed locally between different sockets before the data finally
@@ -35,15 +35,24 @@ But why to bypass network stack?
 * sockmap_ integrates with kernel's strparser_ and allows one to parse, process
   update the payload before redirecting. Check: ktls-bpf_.
 
-Any side-effects of bypassing?
+Side-effects of bypassing?
 ------------------------------
 * Possibly. If you have tooling which depends on this traffic passing through
   network stack then yes. For e.g., you may have an iptables rule to do xyz.
   This xyz would not work anymore, since the data is directly tossed between
   the sockets.
 
-Solution details
-================
+Solution details: How eBPF helps?
+=================================
+
+Use of sockmap
+--------------
+- Special SOCKMAP map
+- Ways to initialize this sockmap from userspace or kernelspace
+- Redirecting packets
+    - Use of BPF_F_INGRESS flag
+- Parser and verdict eBPF functions
+Draw a picture to specify this
 
 What are the pieces?
 --------------------

@@ -17,41 +17,6 @@
 #define ERROR(...) { printf(__VA_ARGS__); }
 #define INFO(...)  { printf(__VA_ARGS__); }
 
-#if 0
-void load_prog(void)
-{
-    int err, parse_prog, verdict_prog, sockops_prog;
-    struct bpf_object *obj;
-    struct bpf_map *skmap;
-
-    err = bpf_prog_load("bin/local-socket-bypass-sockops-kern.bo",
-                 BPF_PROG_TYPE_SOCK_OPS, &obj, &sockops_prog);
-    if (err) FATAL("sockops bpf_prog_load failed err:%d\n", err);
-
-    skmap = bpf_object__find_map_by_name(obj, "skmap");
-    if (!skmap) FATAL("cud not find skmap\n");
-
-    g_skmap_fd = bpf_map__fd(skmap);
-    if (g_skmap_fd < 0) FATAL("Could not get the stat map\n");
-
-    /* Load parser, get skmap fd and attach fd to parser */
-    err = bpf_prog_load("bin/local-socket-bypass-parse-kern.bo",
-                 BPF_PROG_TYPE_SK_SKB, &obj, &parse_prog);
-    if (err) FATAL("parse bpf_prog_load failed err:%d\n", err);
-
-    err = bpf_prog_attach(parse_prog, g_skmap_fd, BPF_SK_SKB_STREAM_PARSER, 0);
-    if (err) FATAL("bpf_prog_attach failed err=%d\n", err);
-
-    /* Load verdict, skmap fd we already have and attach fd to verdict */
-    err = bpf_prog_load("bin/local-socket-bypass-verdict-kern.bo",
-                 BPF_PROG_TYPE_SK_SKB, &obj, &verdict_prog);
-    if (err) FATAL("verdict bpf_prog_load failed err:%d\n", err);
-
-    err = bpf_prog_attach(verdict_prog, g_skmap_fd, BPF_SK_SKB_STREAM_VERDICT, 0);
-    if (err) FATAL("bpf_prog_attach failed err=%d\n", err);
-}
-#endif
-
 int prog_attach_type[] = {
     BPF_SK_SKB_STREAM_PARSER,
     BPF_SK_SKB_STREAM_VERDICT,
@@ -79,7 +44,7 @@ void load_prog(void)
     int    ret;
     int    i = 0;
 
-    obj = bpf_object__open("bin/local-socket-bypass-sockops-kern.bo");
+    obj = bpf_object__open("bin/local-socket-bypass-kern.bo");
     err = libbpf_get_error(obj);
     if (err) {
         char err_buf[256];
@@ -105,12 +70,10 @@ void load_prog(void)
     g_skmap_fd = bpf_map__fd(skmap);
     if (g_skmap_fd < 0) FATAL("cud not find map\n");
 
-    ret = bpf_prog_attach(prog_fd[0], g_skmap_fd,
-                    BPF_SK_SKB_STREAM_PARSER, 0);
+    ret = bpf_prog_attach(prog_fd[0], g_skmap_fd, BPF_SK_SKB_STREAM_PARSER, 0);
     if (ret) FATAL("attach sockmap to parser failed\n");
 
-    ret = bpf_prog_attach(prog_fd[1], g_skmap_fd,
-                    BPF_SK_SKB_STREAM_VERDICT, 0);
+    ret = bpf_prog_attach(prog_fd[1], g_skmap_fd, BPF_SK_SKB_STREAM_VERDICT, 0);
     if (ret) FATAL("attach sockmap to verdict failed\n");
 
     ret = bpf_prog_attach(prog_fd[2], cgrp_fd, BPF_CGROUP_SOCK_OPS, 0);
@@ -122,7 +85,8 @@ int main(int argc, char *argv[])
 {
     int ret;
 
-    if (argc < 2) FATAL("Usage: %s <script-to-exec>\n", argv[0]);
+    if (argc < 2)
+        FATAL("Usage: %s <script-to-exec, ./run_localsock.sh>\n", argv[0]);
 
     if (setup_cgroup_environment()) FATAL("setup cgrp failed\n");
     cgrp_fd = create_and_get_cgroup(CGRP_PATH);
@@ -132,6 +96,10 @@ int main(int argc, char *argv[])
     load_prog();
     ret = system(argv[1]);
     INFO("%s ret=%d\n", argv[1], ret);
+    
+    bpf_prog_detach2(prog_fd[2], cgrp_fd, BPF_CGROUP_SOCK_OPS);
+    bpf_prog_detach2(prog_fd[0], g_skmap_fd, BPF_SK_SKB_STREAM_PARSER);
+    bpf_prog_detach2(prog_fd[1], g_skmap_fd, BPF_SK_SKB_STREAM_VERDICT);
 
     cleanup_cgroup_environment();
     close(cgrp_fd);
