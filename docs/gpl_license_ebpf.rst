@@ -95,6 +95,7 @@ GPLed::
     bpf_tcp_check_syncookie
 
 Non-GPLed::
+
     bpf_current_task_under_cgroup
     bpf_send_signal
     bpf_sysctl_get_name
