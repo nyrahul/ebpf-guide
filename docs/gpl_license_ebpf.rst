@@ -9,8 +9,7 @@ helper_ functions.
 
 eBPF helper_ functions allows one to invoke kernel functions. These helper
 functions can either be GPLed or not and they have to explicitly define
-their license. For e.g.,
-.. code:: c
+their license. For e.g.,::
     static const struct bpf_func_proto bpf_probe_read_proto = {
         .func       = bpf_probe_read,
         .gpl_only   = true,
