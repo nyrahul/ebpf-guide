@@ -28,8 +28,7 @@ GPL too using:
 What happens if you try to use GPL-only helper in a eBPF not declared as "GPL"?
 -------------------------------------------------------------------------------
 
-In-kernel verifier will spit out the bytecode with an error, for e.g.,
-.. code:: c
+In-kernel verifier will spit out the bytecode with an error, for e.g.,::
     Verifier analysis:
     0: (bf) r6 = r1
     1: (61) r8 = *(u32 *)(r6 +80)
