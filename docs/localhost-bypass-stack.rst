@@ -57,8 +57,8 @@ Draw a picture to specify this
 What are the pieces?
 --------------------
 1. `Kernel space ebpf <src/local-socket-bypass-kern.c>`_: TODO
-2. `Script to load ebpf <load_tc.sh>`_: Use ``tc egress`` point to load the ebpf bytecode in context to loopback interface.
-3. `Script to spoof packets <spoof-pkt.py>`_: Scapy based python script to spoof UDP packets.
+2. `Script to load ebpf <./run_as_cgroupv2.sh>`_
+3. `Script to load local app <./run_localsock.py>`_
 
 How to test?
 ------------
@@ -68,6 +68,7 @@ Read More
 ---------
 * `sockmap commit <https://lwn.net/Articles/731133/>`_
 * `Cloudflare blog <https://blog.cloudflare.com/sockmap-tcp-splicing-of-the-future/>`_
+* strparse_
 
 .. strparser: https://www.kernel.org/doc/Documentation/networking/strparser.txt
 .. sockmap: https://lwn.net/Articles/731133/
