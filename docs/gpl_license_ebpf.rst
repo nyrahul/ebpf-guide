@@ -67,6 +67,7 @@ List of GPLed vs non-GPLed helpers
 Assuming Kernel v5.3.0
 
 GPLed::
+.. code:: c
     bpf_override_return
     bpf_probe_read
     bpf_probe_write_user
