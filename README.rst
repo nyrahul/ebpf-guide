@@ -19,6 +19,15 @@ FAQs
 
 Problem Statements:
 ~~~~~~~~~~~~~~~~~~~
-1. `Block TCP port 8080 <docs/block-tcp-8080.rst>`_
-2. `Using Container Context to avoid contain malicious containers <docs/drop-spoofed-packets.rst>`_
-3. `Localhost Bypass Transfer <docs/localhost-bypass-stack.rst>`_
+
++-------------------------------------------------------------------------+-----------+-----------+
+| Problem statement                                                       | Hookpoint | Loader    |
++=========================================================================+===========+===========+
+| `Block TCP port 8080 <docs/block-tcp-8080.rst>`_                        | XDP       | iproute2  |
++-------------------------------------------------------------------------+-----------+-----------+
+| `Drop spoofed packets from local socks <docs/drop-spoofed-packets.rst>`_| tc-egress | tc        |
++-------------------------------------------------------------------------+-----------+-----------+
+| `Localhost Network Bypass <docs/localhost-bypass-stack.rst>`_           | sockops,  | libbpf    |
+|                                                                         | strparser |           |
++-------------------------------------------------------------------------+-----------+-----------+
+
