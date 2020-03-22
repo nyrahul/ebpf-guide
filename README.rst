@@ -15,6 +15,7 @@ FAQs
 ~~~~
 
 * `eBPF vs kernel module <docs/ebpf_vs_kernmod.rst>`_
+* `GPL license and eBPF <docs/gpl_license_ebpf.rst>`_
 
 
 Problem Statements:
