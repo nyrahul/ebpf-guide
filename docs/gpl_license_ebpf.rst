@@ -10,6 +10,7 @@ helper_ functions.
 eBPF helper_ functions allows one to invoke kernel functions. These helper
 functions can either be GPLed or not and they have to explicitly define
 their license. For e.g.,::
+
     static const struct bpf_func_proto bpf_probe_read_proto = {
         .func       = bpf_probe_read,
         .gpl_only   = true,
@@ -182,4 +183,4 @@ Non-GPLed::
 
 .. _helper: https://github.com/iovisor/bpf-docs/blob/master/bpf_helpers.rst
 .. _Cilium: https://github.com/cilium/cilium
-.. _exception: https://github.com/torvalds/linux/blob/master/LICENSES/exceptions/Linux-syscall-note>
+.. _exception: https://github.com/torvalds/linux/blob/master/LICENSES/exceptions/Linux-syscall-note
