@@ -22,7 +22,7 @@ their license. For e.g.,::
 
 Notice the ``gpl_only`` flag which is set to true in the above helper function,
 which means that any eBPF code using ``bpf_probe_read`` needs to be declared as
-GPL too using::
+GPL too using:
     char __license[] __attribute__((section("license"), used)) = "GPL";
 
 What happens if you try to use GPL-only helper in a eBPF not declared as "GPL"?
