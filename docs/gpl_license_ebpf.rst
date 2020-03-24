@@ -10,6 +10,7 @@ helper_ functions.
 eBPF helper_ functions allows one to invoke kernel functions. These helper
 functions can either be GPLed or not and they have to explicitly define
 their license. For e.g.,::
+
     static const struct bpf_func_proto bpf_probe_read_proto = {
         .func       = bpf_probe_read,
         .gpl_only   = true,
@@ -22,7 +23,6 @@ their license. For e.g.,::
 Notice the ``gpl_only`` flag which is set to true in the above helper function,
 which means that any eBPF code using ``bpf_probe_read`` needs to be declared as
 GPL too using:
-.. code:: c
     char __license[] __attribute__((section("license"), used)) = "GPL";
 
 What happens if you try to use GPL-only helper in a eBPF not declared as "GPL"?
@@ -49,23 +49,26 @@ for ebpf kernel code.
 What about the user-space code which links with ebpf kernel code using maps?
 ----------------------------------------------------------------------------
 This is tricky! GPL license says that if the userspace app is tightly coupled
-with the kernel space app using for e.g, shared memory or highly dependent APIs
-then the userspace app must be made available as GPL code. However, the meaning
-of "tight coupling" can be left open to interpretation even though the GPL
-license definition tries to clarify the commonly used scenarios.
+with the kernel space app using for e.g, shared memory or dependent APIs then
+the userspace app must be made available as GPL code. Since the userspace ebpf
+components interact with the kernel space component using maps and syscalls,
+doesn't this require userspace ebpf apps to be GPLed too?
 
-In general, any pair of code modules of a project are always linked directly or
-indirectly through some communication primitives. It could be sockets, RPCs,
-pipes, or shared memory. It could be directly or not directly linked for e.g.
-using shared library during link time or dynanmically linked using libdl
-(dlsym/dlopen) or statically linked.
+There is a twist here! Kernel license makes an exception_ that any user-space
+component which interacts with kernel using system calls need not be called a
+"derived work". Userspace ebpf code interacts or accesses the kernel space bpf
+maps using system calls and thus may not be tied with GPL licensing.::
+
+    NOTE! This copyright does *not* cover user programs that use kernel
+     services by normal system calls - this is merely considered normal use
+     of the kernel, and does *not* fall under the heading of "derived work".
 
 Most of the ebpf user-space code I have seen is not licensed as GPL (for e.g.,
 from Cilium_ which is licensed as Apache 2.0).
 
 List of GPLed vs non-GPLed helpers
 ----------------------------------
-Assuming Kernel v5.3.0
+<Assuming Kernel v5.3.0>
 
 GPLed::
 
@@ -180,3 +183,4 @@ Non-GPLed::
 
 .. _helper: https://github.com/iovisor/bpf-docs/blob/master/bpf_helpers.rst
 .. _Cilium: https://github.com/cilium/cilium
+.. _exception: https://github.com/torvalds/linux/blob/master/LICENSES/exceptions/Linux-syscall-note
