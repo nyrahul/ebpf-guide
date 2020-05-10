@@ -16,10 +16,8 @@ Setting up env
 --------------
 ebpf depends on kernel-headers and in my samples I use libbpf which is shipped
 as part of the kernel code. The compilation env depends on kernel source to be
-present/compiled successfully. Following steps will prepare:
+present/compiled successfully.
 
-Prepare Kernel
---------------
 You can use your own method to get the kernel and compile it. However, this is
 what I do (and I usually experiment in a VM env):
 
