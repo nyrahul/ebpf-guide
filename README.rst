@@ -12,21 +12,20 @@ such that only instruction-set which fulfills certain constraints are allowed.
 This tutorial will help you to build a sample ebpf programs and get
 familiarized with the tool set.
 
-Setting up compilation env:
---------------------------
+Setting up env
+--------------
 ebpf depends on kernel-headers and in my samples I use libbpf which is shipped
 as part of the kernel code. The compilation env depends on kernel source to be
 present/compiled successfully. Following steps will prepare:
 
-Prepare Linux Kernel
---------------------
+Prepare Kernel
+--------------
 You can use your own method to get the kernel and compile it. However, this is
 what I do (and I usually experiment in a VM env):
 
-1. Go to `kernel.org`_ and download a **longterm** kernel source/tarball.
-2. Compile and install the kernel
+1. Go to `kernel.org` and download a **longterm** kernel source/tarball.
+2. Compile and install the kernel::
 
-::
     sudo apt-get install libncurses-dev flex bison openssl libssl-dev \
                  dkms libelf-dev libudev-dev libpci-dev libiberty-dev \
                  autoconf binutils-dev
@@ -39,11 +38,13 @@ what I do (and I usually experiment in a VM env):
 3. Compile bpf related libs
 
 ::
+
     cd $SRC #SRC=Kernel base folder
     make -C samples/bpf
     make -C tools/lib/bpf   #Compiles libbpf.a
 
 4. Compile ebpf guide
+
 ``cd ebpf-guide && make KRNDIR=$SRC`` where $SRC is kernel base dir
 
 Note these steps were performed using linux-5.4.39.
