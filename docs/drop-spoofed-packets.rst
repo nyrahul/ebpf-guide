@@ -14,16 +14,16 @@ spoofed and dropped.
 
 Solution details
 ----------------
-1. `User space app <src/drop-spoofs-user.c>`_: Responsible to load a map containing the ifindex and the corresponding IPv4 address. This code also shows runtime stats of allowed/dropped packets.
-2. `Kernel space ebpf <src/drop-spoofs-kern.c>`_: Responsible to do run-time checks on the packets based on the map populated from user-space app. Also upgate the runtime stats about dropped, allowed packets.
-3. `Script to load ebpf <load_tc.sh>`_: Use ``tc egress`` point to load the ebpf bytecode in context to loopback interface.
-4. `Script to spoof packets <spoof-pkt.py>`_: Scapy based python script to spoof UDP packets.
+1. `User space app <../src/drop-spoofs-user.c>`_: Responsible to load a map containing the ifindex and the corresponding IPv4 address. This code also shows runtime stats of allowed/dropped packets.
+2. `Kernel space ebpf <../src/drop-spoofs-kern.c>`_: Responsible to do run-time checks on the packets based on the map populated from user-space app. Also upgate the runtime stats about dropped, allowed packets.
+3. `Script to load ebpf <../load_tc.sh>`_: Use ``tc egress`` point to load the ebpf bytecode in context to loopback interface.
+4. `Script to spoof packets <../spoof-pkt.py>`_: Scapy based python script to spoof UDP packets.
 
 How to test?
 ------------
-The `default script <load_tc.sh>`_ loads the ebpf bytecode in context to ``lo``
+The `default script <../load_tc.sh>`_ loads the ebpf bytecode in context to ``lo``
 interface. The ``lo`` by default uses the ip address of ``127.0.0.1``. The
-`spoof packet script <spoof-pkt.py>`_ sends UDP packets with source (malicious)
+`spoof packet script <../spoof-pkt.py>`_ sends UDP packets with source (malicious)
 IP ``157.0.0.10`` to destination IP ``127.0.0.1``. Here since the source IP
 address of ``lo`` interface does not match the packets should be dropped.
 However if you do ``ping 127.0.0.1`` from the command line, those packets

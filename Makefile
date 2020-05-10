@@ -1,5 +1,5 @@
 ifeq (,$(KRNDIR))
-KRNDIR = /home/rahul/rnd/linux-5.3
+KRNDIR = /home/rahul/linux-5.4.39
 endif
 
 BIN = bin
