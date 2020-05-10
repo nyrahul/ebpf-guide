@@ -10,7 +10,8 @@ EBPF allows insertion of **bytecode** in Linux kernel at runtime at various
 such that only instruction-set which fulfills certain constraints are allowed.
 
 This tutorial will help you to build a sample ebpf programs and get
-familiarized with the tool set.
+familiarized with the tool set. For more info, you will find curated list of
+ebpf articles `here <https://github.com/zoidbergwill/awesome-ebpf>`_.
 
 Setting up env
 --------------
@@ -27,6 +28,7 @@ what I do (and I usually experiment in a VM env):
     sudo apt-get install libncurses-dev flex bison openssl libssl-dev \
                  dkms libelf-dev libudev-dev libpci-dev libiberty-dev \
                  autoconf binutils-dev
+    cd $SRC #SRC=Kernel base folder
     make defconfig
     make -j $(nproc)
     sudo make modules_install
