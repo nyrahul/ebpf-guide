@@ -25,7 +25,7 @@ Global/Shared Data
 ******************
 *eBPF cannot access global data unlike kernel modules*.
 
-Since the eBPF instruction set execution is non-preemptible you can store the shared data in PRECPU_MAP.
+Since the eBPF instruction set execution is non-preemptible you can store the shared data in PER_CPU_MAP.
 
 Reusing existing lib
 ********************
