@@ -2,49 +2,31 @@
  * Do not allow a container to generate spoofed packet
  */
 
-#include <uapi/linux/bpf.h>
-#include <uapi/linux/ip.h>
-#include <uapi/linux/in.h>
-#include <uapi/linux/pkt_cls.h>
-#include <uapi/linux/if_ether.h>
-#include "bpf_helpers.h"
-#include "drop-spoofs.h"
+#include "vmlinux.h"
+#include <bpf/bpf_helpers.h>
 
-#ifndef SEC
-#define SEC(NAME) __attribute__((section(NAME), used))
-#endif
+#include "drop-spoofs.h"
 
 #ifndef lock_xadd
 #define lock_xadd(ptr, val) ((void)__sync_fetch_and_add(ptr, val))
 #endif
 
-#define PIN_GLOBAL_NS           2
+#define TC_ACT_OK 				0
+#define TC_ACT_STOLEN 			4
 
-struct bpf_elf_map {
-    __u32 type;
-    __u32 size_key;
-    __u32 size_value;
-    __u32 max_elem;
-    __u32 flags;
-    __u32 id;
-    __u32 pinning;
-};
+struct {
+	__uint(type, BPF_MAP_TYPE_ARRAY);
+	__uint(max_entries, MAX_IFACES);
+	__type(key, uint32_t);
+	__type(value, uint32_t);
+} iface_map SEC(".maps");
 
-struct bpf_elf_map iface_map SEC("maps") = {
-    .type           = BPF_MAP_TYPE_ARRAY,
-    .size_key       = sizeof(uint32_t),
-    .size_value     = sizeof(uint32_t),
-    .max_elem       = MAX_IFACES,
-    .pinning        = PIN_GLOBAL_NS,
-};
-
-struct bpf_elf_map stat_map SEC("maps") = {
-    .type           = BPF_MAP_TYPE_ARRAY,
-    .size_key       = sizeof(uint32_t),
-    .size_value     = sizeof(uint32_t),
-    .max_elem       = 2,
-    .pinning        = PIN_GLOBAL_NS,
-};
+struct {
+	__uint(type, BPF_MAP_TYPE_ARRAY);
+	__uint(max_entries, 2);
+	__type(key, uint32_t);
+	__type(value, uint32_t);
+} stat_map SEC(".maps");
 
 static __inline void update_stat(uint32_t act)
 {

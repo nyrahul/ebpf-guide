@@ -4,24 +4,20 @@
  * 1. sockmap can be used only for TCP sockets
  * 2. since tcp/ip stack is bypassed, underneath tooling such as tcpdump and
  *    other OAM/stats collection will not work for these bypassed sockets.
- * 3. 
  */
 
-#include <uapi/linux/bpf.h>
-#include <linux/in.h>
-#include <linux/version.h>
-
-#include "bpf_helpers.h"
+#include "vmlinux.h"
+#include <bpf/bpf_helpers.h>
 
 #define SRV_IDX  0
 #define CLI_IDX  1
 
-struct bpf_map_def SEC("maps") skmap = {
-    .type        = BPF_MAP_TYPE_SOCKMAP,
-    .key_size    = sizeof(int),
-    .value_size  = sizeof(unsigned int),
-    .max_entries = 2,
-};
+struct {
+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
+	__uint(max_entries, 2);
+	__type(key, int);
+	__type(value, uint32_t);
+} skmap SEC(".maps");
 
 SEC("sk_skb1")
 int prog1(struct __sk_buff *skb)
@@ -73,4 +69,3 @@ int sock_map_update(struct bpf_sock_ops *ops)
 }
 
 char _license[] SEC("license") = "GPL";
-int  _version   SEC("version") = LINUX_VERSION_CODE;

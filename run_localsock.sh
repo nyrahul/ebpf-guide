@@ -33,4 +33,4 @@ workload2()
 
 workload2
 
-timeout --preserve-status 1s bpftool prog tracelog #show whatever logs were captured
+timeout --preserve-status 1s tools/bpftool prog tracelog #show whatever logs were captured

@@ -4,14 +4,13 @@
  * Check: block-tcp-8080.rst for details
  */
 
-#include <uapi/linux/bpf.h>
-#include <uapi/linux/in.h>
-#include <uapi/linux/if_ether.h>
-#include <uapi/linux/ip.h>
-#include <uapi/linux/tcp.h>
+#include "vmlinux.h"
+#include <bpf/bpf_helpers.h>
 
 // Sizeof all headers till TCP
 #define TOTSZ (sizeof(struct ethhdr) + sizeof(struct iphdr) + sizeof(struct tcphdr))
+
+#define htons(X)	((((uint16_t)X)&0xff00>>16)|(((uint16_t)X)&0x00ff<<16))
 
 int xdp_drop(struct xdp_md *ctx)
 {
