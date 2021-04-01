@@ -17,6 +17,7 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -I$(KRNDIR)/include -I$(KRNDIR)/arch/x86/include/uapi \
 	 -I$(KRNDIR)/arch/x86/include/generated/uapi -I$(KRNDIR)/include/uapi \
 	 -I$(KRNDIR)/include/generated/uapi \
+	 -I$(KRNDIR)/tools/lib/bpf \
 	 -include $(KRNDIR)/include/linux/kconfig.h \
 	 -include asm_goto_workaround.h \
 	 -I$(KRNDIR)/samples/bpf -I$(KRNDIR)/tools/testing/selftests/bpf -Isrc \
@@ -28,7 +29,7 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -O2 -emit-llvm
 
 UF  = -Isrc -O2 -I $(KRNDIR)/tools/lib -Wall -I$(KRNDIR)/tools/testing/selftests/bpf
-UDF = $(KRNDIR)/tools/lib/bpf/libbpf.a -lelf
+UDF = $(KRNDIR)/tools/lib/bpf/libbpf.a -lelf -lz
 
 SRCDIR=src
 
