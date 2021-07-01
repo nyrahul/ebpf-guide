@@ -1,6 +1,8 @@
 ifeq (,$(KRNDIR))
-KRNDIR = /home/rahul/linux-5.4.39
+KRNDIR = /usr/src/linux-headers-5.4.0-77-generic
+# KRNDIR = /home/rahul/linux-5.4.39
 endif
+LIBBPF = libbpf
 
 BIN = bin
 CL  = clang
@@ -17,10 +19,9 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -I$(KRNDIR)/include -I$(KRNDIR)/arch/x86/include/uapi \
 	 -I$(KRNDIR)/arch/x86/include/generated/uapi -I$(KRNDIR)/include/uapi \
 	 -I$(KRNDIR)/include/generated/uapi \
-	 -I$(KRNDIR)/tools/lib/bpf \
+	 -I$(LIBBPF)/src \
 	 -include $(KRNDIR)/include/linux/kconfig.h \
-	 -include asm_goto_workaround.h \
-	 -I$(KRNDIR)/samples/bpf -I$(KRNDIR)/tools/testing/selftests/bpf -Isrc \
+	 -Isrc \
 	 -D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
 	 -D__TARGET_ARCH_x86 -Wno-compare-distinct-pointer-types \
 	 -Wno-gnu-variable-sized-type-not-at-end \
@@ -28,8 +29,8 @@ KF = -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/7/include \
 	 -Wno-unknown-warning-option  \
 	 -O2 -emit-llvm
 
-UF  = -Isrc -O2 -I $(KRNDIR)/tools/lib -Wall -I$(KRNDIR)/tools/testing/selftests/bpf
-UDF = $(KRNDIR)/tools/lib/bpf/libbpf.a -lelf -lz
+UF  = -Isrc -O2 -Wall -Iutils/ -I$(LIBBPF)/src
+UDF = $(LIBBPF)/src/libbpf.a -lelf -lz
 
 SRCDIR=src
 
@@ -41,7 +42,7 @@ SRCS_USER:=$(wildcard $(SRCDIR)/*-user.c)
 SRCN:=$(notdir $(SRCS_USER))
 UBINS:=$(patsubst %.c,$(BIN)/%.bin,$(SRCN))
 
-UTIL_SRC=$(KRNDIR)/tools/testing/selftests/bpf/cgroup_helpers.c
+UTIL_SRC=utils/cgroup_helpers.c
 
 vpath %.c $(SRCDIR)
 
@@ -58,6 +59,9 @@ chkdir:
 ifeq (,$(wildcard $(KRNDIR)/Kconfig))
 	@echo "Your kernel path[$(RED)$(KRNDIR)$(NC)] is incorrect. Use 'make KRNDIR=[KERNEL-SRC-PATH]'."
 	Quitting abnormally
+endif
+ifeq (,$(wildcard $(LIBBPF)/src/libbpf.a))
+	make -C $(LIBBPF)/src
 endif
 	@mkdir -p $(BIN) 2>/dev/null
 

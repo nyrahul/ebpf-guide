@@ -9,8 +9,8 @@
 #include <unistd.h>
 
 #include <linux/bpf.h>
-#include <bpf/bpf.h>
-#include <bpf/libbpf.h>
+#include <bpf.h>
+#include <libbpf.h>
 #include <cgroup_helpers.h>
 
 #define FATAL(...) { printf(__VA_ARGS__); exit(1); }
@@ -52,7 +52,7 @@ void load_prog(void)
         libbpf_strerror(err, err_buf, sizeof(err_buf));
         FATAL("object open failed [%s]\n", err_buf);
     }
-    
+
     bpf_object__for_each_program(prog, obj) {
         bpf_program__set_type(prog, prog_type[i]);
         bpf_program__set_expected_attach_type(prog, prog_attach_type[i]);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     load_prog();
     ret = system(argv[1]);
     INFO("%s ret=%d\n", argv[1], ret);
-    
+
     bpf_prog_detach2(prog_fd[2], cgrp_fd, BPF_CGROUP_SOCK_OPS);
     bpf_prog_detach2(prog_fd[0], g_skmap_fd, BPF_SK_SKB_STREAM_PARSER);
     bpf_prog_detach2(prog_fd[1], g_skmap_fd, BPF_SK_SKB_STREAM_VERDICT);

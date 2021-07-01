@@ -17,7 +17,7 @@
 #include <netinet/in.h>
 
 #include <linux/bpf.h>
-#include <bpf/bpf.h>
+#include <bpf.h>
 #include "drop-spoofs.h"
 
 int g_stat_fd = -1;
