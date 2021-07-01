@@ -1,6 +1,6 @@
 ifeq (,$(KRNDIR))
-KRNDIR = /usr/src/linux-headers-5.4.0-77-generic
-# KRNDIR = /home/rahul/linux-5.4.39
+KRNVER = $(shell uname -r)
+KRNDIR = /usr/src/linux-headers-$(KRNVER)
 endif
 LIBBPF = libbpf
 
